@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Service Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background: #f0f2f5; padding: 10px; padding-bottom: 90px; }
+
+    .address {
+      padding: 15px;
+      background: #fff;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    .search-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+      background: #fff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .search-wrapper label {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .search-wrapper input {
+      font-size: 1rem;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .category-buttons {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 0;
+      margin-bottom: 10px;
+    }
+
+    .category-buttons button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 15px;
+      border: none;
+      background: #2196f3;
+      color: #fff;
+      border-radius: 20px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: transform 0.2s ease, background 0.3s;
+      cursor: pointer;
+    }
+
+    .category-buttons button:hover {
+      transform: scale(1.05);
+      background: #1e88e5;
+    }
+
+    .category-buttons ion-icon {
+      font-size: 1.2rem;
+    }
+
+    .upload-section {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: slideDown 0.2s ease forwards;
+    }
+
+    .upload-section.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .upload-section label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .upload-section input,
+    .upload-section textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+    }
+
+    .upload-section button {
+      padding: 10px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .upload-section button:hover {
+      transform: scale(1.05);
+    }
+
+    .sub-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sub-options span {
+      background: #e0e0e0;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .navigation {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #ccc;
+      padding: 10px 0;
+      z-index: 100;
+    }
+
+    .navigation div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #777;
+      font-size: 0.75rem;
+      transition: transform 0.2s ease, color 0.3s;
+      cursor: pointer;
+    }
+
+    .navigation div:hover {
+      transform: scale(1.1);
+    }
+
+    .navigation .active {
+      color: #2196f3;
+    }
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔝 Address (Left Aligned) -->
+  <div class="address">📍 123 Main Street, Springfield</div>
+
+  <!-- 🔍 Search Bar -->
+  <div class="search-wrapper">
+    <label for="search">Search Services</label>
+    <input type="search" id="search" placeholder="Search here...">
+  </div>
+
+  <!-- 📂 Category Buttons -->
+  <div class="category-buttons">
+    <button onclick="showUpload('Home Help')"><ion-icon name="construct-outline"></ion-icon>Home Help</button>
+    <button onclick="showUpload('Outdoor Help')"><ion-icon name="leaf-outline"></ion-icon>Outdoor</button>
+    <button onclick="showUpload('Painting')"><ion-icon name="color-palette-outline"></ion-icon>Painting</button>
+    <button onclick="showUpload('Assembly')"><ion-icon name="build-outline"></ion-icon>Assembly</button>
+    <button onclick="showUpload('AC Repair')"><ion-icon name="snow-outline"></ion-icon>AC Repair</button>
+    <button onclick="showUpload('Cleaning')"><ion-icon name="sparkles-outline"></ion-icon>Cleaning</button>
+    <button onclick="showUpload('Cooking')"><ion-icon name="restaurant-outline"></ion-icon>Cooking</button>
+    <button onclick="showUpload('Electronics')"><ion-icon name="phone-portrait-outline"></ion-icon>Electronics</button>
+  </div>
+
+  <!-- 🧾 Upload Section -->
+  <div class="upload-section" id="uploadSection">
+    <label><ion-icon name="image-outline"></ion-icon>Upload Image</label>
+    <input type="file" accept="image/*" multiple>
+    <label><ion-icon name="videocam-outline"></ion-icon>Upload Video</label>
+    <input type="file" accept="video/*" multiple>
+    <label><ion-icon name="create-outline"></ion-icon>Description</label>
+    <textarea rows="3" placeholder="Describe the service you need..."></textarea>
+    <div class="sub-options" id="subOptions"></div>
+    <button><ion-icon name="send-outline"></ion-icon> Submit</button>
+  </div>
+
+  <!-- 📱 Bottom Navigation -->
+  <div class="navigation">
+    <div class="active">
+      <ion-icon name="home-outline"></ion-icon>
+      <span>Home</span>
+    </div>
+    <div>
+      <ion-icon name="clipboard-outline"></ion-icon>
+      <span>My Tasks</span>
+    </div>
+    <div>
+      <ion-icon name="bar-chart-outline"></ion-icon>
+      <span>Stats</span>
+    </div>
+    <div>
+      <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+      <span>Support</span>
+    </div>
+    <div>
+      <ion-icon name="person-circle-outline"></ion-icon>
+      <span>Profile</span>
+    </div>
+  </div>
+
+  <!-- ⚙️ JavaScript -->
+  <script defer>
+    const uploadSection = document.getElementById("uploadSection");
+    const subOptions = document.getElementById("subOptions");
+
+    const categoryMap = {
+      "Home Help": [
+        { name: "Electrician", icon: "flash-outline" },
+        { name: "Plumber", icon: "water-outline" },
+        { name: "Carpenter", icon: "hammer-outline" },
+        { name: "Handyman", icon: "construct-outline" },
+        { name: "TV Installation", icon: "tv-outline" }
+      ],
+      "Painting": [
+        { name: "Interior", icon: "color-fill-outline" },
+        { name: "Exterior", icon: "brush-outline" },
+        { name: "Wall Art", icon: "images-outline" },
+        { name: "Textured Finish", icon: "grid-outline" }
+      ],
+      "Electronics": [
+        { name: "TV Repair", icon: "tv-outline" },
+        { name: "Mobile Repair", icon: "phone-portrait-outline" },
+        { name: "Fridge Repair", icon: "cube-outline" },
+        { name: "Washing Machine", icon: "sync-outline" }
+      ],
+      "AC Repair": [
+        { name: "Split AC", icon: "snow-outline" },
+        { name: "Window AC", icon: "cloud-outline" },
+        { name: "Gas Filling", icon: "flame-outline" },
+        { name: "Installation", icon: "construct-outline" }
+      ],
+      "Cooking": [
+        { name: "Home Cook", icon: "restaurant-outline" },
+        { name: "Tiffin Service", icon: "fast-food-outline" },
+        { name: "Event Catering", icon: "wine-outline" }
+      ],
+      "Cleaning": [
+        { name: "Bathroom", icon: "water-outline" },
+        { name: "Kitchen", icon: "hardware-chip-outline" },
+        { name: "Full Home", icon: "home-outline" },
+        { name: "Carpet", icon: "layers-outline" },
+        { name: "Sofa", icon: "bed-outline" }
+      ],
+      "Assembly": [
+        { name: "Furniture Setup", icon: "build-outline" },
+        { name: "Appliance Setup", icon: "cog-outline" },
+        { name: "Modular Kitchen", icon: "grid-outline" }
+      ],
+      "Outdoor Help": [
+        { name: "Gardening", icon: "leaf-outline" },
+        { name: "Gate Repair", icon: "lock-closed-outline" },
+        { name: "Pest Control", icon: "bug-outline" },
+        { name: "Water Tank Cleaning", icon: "water-outline" }
+      ]
+    };
+
+    function showUpload(category) {
+      uploadSection.classList.add("show");
+      subOptions.innerHTML = "";
+      (categoryMap[category] || []).forEach(opt => {
+        const span = document.createElement("span");
+        span.innerHTML = `<ion-icon name="${opt.icon}"></ion-icon> ${opt.name}`;
+        subOptions.appendChild(span);
+      });
+    }
+  </script>
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+</body>
+</html>
