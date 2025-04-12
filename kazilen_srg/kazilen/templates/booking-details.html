@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Booking Details</title>
+  <style>
+    body { font-family: Arial; margin: 0; padding: 1rem; background: #f9fafb; }
+    .header { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
+    .detail-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .row { margin-bottom: 1rem; }
+    .label { font-weight: bold; color: #4b5563; }
+    .value { margin-top: 0.3rem; }
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: #2563eb;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-btn" onclick="window.history.back()">← Back</div>
+  <div class="header">Booking Details</div>
+  <div class="detail-card" id="details">Loading...</div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('id');
+
+    fetch('bookings.php')
+      .then(res => res.json())
+      .then(bookings => {
+        const booking = bookings[bookingId];
+        if (!booking) {
+          document.getElementById('details').innerHTML = 'Booking not found.';
+          return;
+        }
+
+        document.getElementById('details').innerHTML = `
+          <div class="row">
+            <div class="label">Service</div>
+            <div class="value">${booking.service}</div>
+          </div>
+          <div class="row">
+            <div class="label">Date & Time</div>
+            <div class="value">${booking.time}</div>
+          </div>
+          <div class="row">
+            <div class="label">Worker Name</div>
+            <div class="value">${booking.workerName}</div>
+          </div>
+          <div class="row">
+            <div class="label">Status</div>
+            <div class="value">${booking.status}</div>
+          </div>
+        `;
+      })
+      .catch(err => {
+        document.getElementById('details').innerHTML = 'Error loading booking.';
+        console.error(err);
+      });
+  </script>
+
+</body>
+</html>
