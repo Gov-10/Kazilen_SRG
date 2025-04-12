@@ -1,1 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Bookings</title>
+  <style>
+    body { font-family: Arial; background: #f3f4f6; margin: 0; padding-bottom: 60px; }
+    .header { text-align: center; padding: 1rem; background: #fff; font-size: 1.5rem; font-weight: bold; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+    .filter-tabs {
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 0.5rem 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .filter-tab {
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: #6b7280;
+      cursor: pointer;
+    }
+    .filter-tab.active {
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+    }
+
+    .booking-container { padding: 1rem; }
+    .booking-card {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+    .booking-info { max-width: 75%; }
+    .service-title { font-weight: bold; color: #1f2937; }
+    .booking-time { font-size: 0.9rem; color: #6b7280; }
+    .worker { display: flex; align-items: center; margin-top: 0.5rem; }
+    .worker-pic {
+      width: 40px;
+      height: 40px;
+      background: #d1d5db;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    .status {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      border-radius: 9999px;
+      font-weight: bold;
+      text-align: center;
+      min-width: 70px;
+    }
+    .Ongoing { background: #fef3c7; color: #92400e; }
+    .Completed { background: #d1fae5; color: #065f46; }
+    .Cancelled { background: #fee2e2; color: #991b1b; }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 0.5rem 0;
+      border-top: 1px solid #e5e7eb;
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    .nav-item.active {
+      color: #2563eb;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">My Bookings</div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <div class="filter-tab active" data-status="All">All</div>
+    <div class="filter-tab" data-status="Ongoing">Ongoing</div>
+    <div class="filter-tab" data-status="Completed">Completed</div>
+    <div class="filter-tab" data-status="Cancelled">Cancelled</div>
+  </div>
+
+  <!-- Bookings List -->
+  <div class="booking-container" id="bookings">Loading...</div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item">Home</div>
+    <div class="nav-item active">My Booking</div>
+    <div class="nav-item">Leaderboard</div>
+    <div class="nav-item">Help</div>
+    <div class="nav-item">Account</div>
+  </div>
+
+  <script>
+    let allBookings = [];
+
+    const renderBookings = (filterStatus) => {
+      const container = document.getElementById('bookings');
+      container.innerHTML = '';
+
+      const filtered = filterStatus === 'All'
+        ? allBookings
+        : allBookings.filter(b => b.status === filterStatus);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#9ca3af; margin-top:1rem;">No bookings found</div>`;
+        return;
+      }
+
+      filtered.forEach((booking, index) => {
+        const card = document.createElement('div');
+        card.className = 'booking-card';
+        card.onclick = () => {
+          const originalIndex = allBookings.indexOf(booking);
+          window.location.href = `booking-details.html?id=${originalIndex}`;
+        };
+        card.innerHTML = `
+          <div class="booking-info">
+            <div class="service-title">${booking.service}</div>
+            <div class="booking-time">${booking.time}</div>
+            <div class="worker">
+              <div class="worker-pic"></div>
+              <div>${booking.workerName}</div>
+            </div>
+          </div>
+          <div class="status ${booking.status}">${booking.status}</div>
+        `;
+        container.appendChild(card);
+      });
+    };
+
+    fetch('bookings.php')
+      .then(response => response.json())
+      .then(bookings => {
+        allBookings = bookings;
+        renderBookings('All');
+      })
+      .catch(err => {
+        document.getElementById('bookings').innerHTML = 'Failed to load bookings.';
+        console.error(err);
+      });
+
+    // Filter click handling
+    const tabs = document.querySelectorAll('.filter-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const status = tab.dataset.status;
+        renderBookings(status);
+      });
+    });
+  </script>
+
+</body>
+</html>
 
